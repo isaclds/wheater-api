@@ -2,6 +2,10 @@
 
 API de previsão do tempo que abstrai APIs externas de dados climáticos, oferecendo cache e busca por localização (país, estado ou cidade).
 
+## INFOS PARA DESENVOLVIMENTO
+
+Service da Nasa deve ser utilizado para informações passadas enquanto o Forecast para opreações futuras
+
 ## Objetivo
 
 Fornecer uma API com 4 endpoints de previsão do tempo, escondendo a complexidade de lidar com múltiplos provedores, cache e formatos de dados diferentes.
