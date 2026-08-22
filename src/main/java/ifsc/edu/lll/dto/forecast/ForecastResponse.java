@@ -1,16 +1,10 @@
 package ifsc.edu.lll.dto.forecast;
 
-public record ForecastResponse<CurrentUnits, CurrentData, HourlyUnits, HourlyData, DailyUnits, DailyData>(
+import java.util.Map;
+
+public record ForecastResponse(
         double latitude,
         double longitude,
-        double elevation,
         String timezone,
-        String timezone_abbreviation,
-        long utc_offset_seconds,
-        CurrentUnits current_units,
-        CurrentData current,
-        HourlyUnits hourly_units,
-        HourlyData hourly,
-        DailyUnits daily_units,
         DailyData daily
 ) {}
