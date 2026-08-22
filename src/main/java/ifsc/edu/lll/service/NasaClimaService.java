@@ -13,10 +13,13 @@ public class NasaClimaService {
 
     private final NasaPowerClient nasaPowerClient;
 
-    private static final String PARAMETROS =
-            "T2M,PRECTOTCORR,RH2M,WS2M"; // temp média, precipitação corrigida, umidade, vento a 2m
+    private static final String PARAMETROS;
+    private static final DateTimeFormatter FORMATO_NASA;
 
-    private static final DateTimeFormatter FORMATO_NASA = DateTimeFormatter.ofPattern("yyyyMMdd");
+    static {
+        PARAMETROS = "T2M,PRECTOTCORR,RH2M,WS2M"; // temp média, precipitação corrigida, umidade, vento a 2m
+        FORMATO_NASA = DateTimeFormatter.ofPattern("yyyyMMdd");
+    }
 
     public NasaClimaService(NasaPowerClient nasaPowerClient) {
         this.nasaPowerClient = nasaPowerClient;
