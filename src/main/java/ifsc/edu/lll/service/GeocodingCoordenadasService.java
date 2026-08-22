@@ -1,14 +1,16 @@
 package ifsc.edu.lll.service;
 
 import ifsc.edu.lll.client.GeocodingClient;
+import ifsc.edu.lll.service.mapper.GeocodingResponseMapper;
 import ifsc.edu.lll.dto.geocoding.GeoResponse;
-import ifsc.edu.lll.dto.geocoding.GeoResult;
 import ifsc.edu.lll.dto.shared.Coordenadas;
 import org.springframework.stereotype.Service;
 
 @Service
 public class GeocodingCoordenadasService {
+
     private final GeocodingClient geocodingClient;
+    private final GeocodingResponseMapper mapper;
 
     private static final String LANGUAGE;
     private static final int COUNT;
@@ -18,19 +20,14 @@ public class GeocodingCoordenadasService {
         COUNT = 1;
     }
 
-    public GeocodingCoordenadasService(GeocodingClient geocodingClient) {
+    public GeocodingCoordenadasService(GeocodingClient geocodingClient, GeocodingResponseMapper mapper) {
         this.geocodingClient = geocodingClient;
+        this.mapper = mapper;
     }
 
     public Coordenadas buscaCoordenadas(String local, String codigoPais) {
         GeoResponse dados = this.buscaDados(local, codigoPais);
-
-        if (dados.results() == null || dados.results().isEmpty()) {
-            throw new IllegalArgumentException("Nenhum local encontrado para: " + local);
-        }
-
-        GeoResult resultado = dados.results().getFirst();
-        return new Coordenadas(resultado.latitude(), resultado.longitude());
+        return mapper.paraCoordenadas(dados);
     }
 
     private GeoResponse buscaDados(String local, String codigoPais) {
