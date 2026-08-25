@@ -52,6 +52,7 @@ public class PrevisaoService {
     }
 
     private DadosClimaticos buscarClima(Coordenadas coordenadas, LocalDate data) {
+        if (data==null) data=LocalDate.now();
         if (data.isBefore(LocalDate.now())) {
             return buscarClimaPassado(coordenadas, data);
         }
