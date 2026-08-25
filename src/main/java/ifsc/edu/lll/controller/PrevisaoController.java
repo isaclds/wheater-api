@@ -1,5 +1,6 @@
 package ifsc.edu.lll.controller;
 
+import ifsc.edu.lll.dto.response.ApiResponse;
 import ifsc.edu.lll.dto.shared.DadosClimaticos;
 import ifsc.edu.lll.service.PrevisaoService;
 import org.springframework.http.ResponseEntity;
@@ -19,25 +20,28 @@ public class PrevisaoController {
     }
 
     @GetMapping("/{pais}")
-    public ResponseEntity<List<DadosClimaticos>> previsaoPorPais(
+    public ResponseEntity<ApiResponse<List<DadosClimaticos>>> previsaoPorPais(
             @PathVariable String pais,
             @RequestParam(required = false) String data) {
-        return ResponseEntity.ok(previsaoService.buscaPrevisaoPorPais(pais, parseData(data)));
+        List<DadosClimaticos> climas = previsaoService.buscaPrevisaoPorPais(pais, parseData(data));
+        return ResponseEntity.ok(ApiResponse.success(climas));
     }
     @GetMapping("/{pais}/{estado}")
-    public ResponseEntity<List<DadosClimaticos>> previsaoPorPaisEstado(
+    public ResponseEntity<ApiResponse<List<DadosClimaticos>>> previsaoPorPaisEstado(
             @PathVariable String pais,
             @PathVariable String estado,
             @RequestParam(required = false) String data) {
-        return ResponseEntity.ok(previsaoService.buscaPrevisaoPorEstado(pais, estado, parseData(data)));
+        List<DadosClimaticos> climas = previsaoService.buscaPrevisaoPorEstado(pais, estado, parseData(data));
+        return ResponseEntity.ok(ApiResponse.success(climas));
     }
     @GetMapping("/{pais}/{estado}/{cidade}")
-    public ResponseEntity<DadosClimaticos> previsaoPorPaisEstadoCidade(
+    public ResponseEntity<ApiResponse<DadosClimaticos>> previsaoPorPaisEstadoCidade(
             @PathVariable String pais,
             @PathVariable String estado,
             @PathVariable String cidade,
             @RequestParam(required = false) String data) {
-        return ResponseEntity.ok(previsaoService.buscaPrevisaoPorCidade(pais, cidade, parseData(data)));
+        DadosClimaticos clima = previsaoService.buscaPrevisaoPorCidade(pais, cidade, parseData(data));
+        return ResponseEntity.ok(ApiResponse.success(clima));
     }
 
     private LocalDate parseData(String data) {
