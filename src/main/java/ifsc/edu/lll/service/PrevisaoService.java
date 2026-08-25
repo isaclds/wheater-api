@@ -14,13 +14,16 @@ public class PrevisaoService {
     private final GeocodingCoordenadasService geocodingCoordenadasService;
     private final ForecastClimaService forecastClimaService;
     private final NasaClimaService nasaClimaService;
+    private final LocalidadesReferencia localidadesReferencia;
 
     public PrevisaoService(GeocodingCoordenadasService geocodingCoordenadasService,
                            ForecastClimaService forecastClimaService,
-                           NasaClimaService nasaClimaService) {
+                           NasaClimaService nasaClimaService,
+                           LocalidadesReferencia localidadesReferencia) {
         this.geocodingCoordenadasService = geocodingCoordenadasService;
         this.forecastClimaService = forecastClimaService;
         this.nasaClimaService = nasaClimaService;
+        this.localidadesReferencia = localidadesReferencia;
     }
 
     public DadosClimaticos buscaPrevisaoPorCidade(String pais, String cidade, LocalDate data) {
@@ -28,14 +31,24 @@ public class PrevisaoService {
         return buscarClima(coordenadas, data);
     }
 
-    public DadosClimaticos buscaPrevisaoPorPais(String pais, LocalDate data) {
-        Coordenadas coordenadas = geocodingCoordenadasService.buscaCoordenadas(pais, pais);
-        return buscarClima(coordenadas, data);
+    public List<DadosClimaticos> buscaPrevisaoPorPais(String pais, LocalDate data) {
+        List<String> cidades = localidadesReferencia.cidadesDoPais(pais);
+        return cidades.stream()
+                .map(cidade -> {
+                    Coordenadas coordenadas = geocodingCoordenadasService.buscaCoordenadas(cidade, pais);
+                    return buscarClima(coordenadas, data);
+                })
+                .toList();
     }
 
-    public DadosClimaticos buscaPrevisaoPorEstado(String pais, String estado, LocalDate data) {
-        Coordenadas coordenadas = geocodingCoordenadasService.buscaCoordenadas(estado, pais);
-        return buscarClima(coordenadas, data);
+    public List<DadosClimaticos> buscaPrevisaoPorEstado(String pais, String estado, LocalDate data) {
+        List<String> cidades = localidadesReferencia.cidadesDoEstado(pais, estado);
+        return cidades.stream()
+                .map(cidade -> {
+                    Coordenadas coordenadas = geocodingCoordenadasService.buscaCoordenadas(cidade, pais);
+                    return buscarClima(coordenadas, data);
+                })
+                .toList();
     }
 
     private DadosClimaticos buscarClima(Coordenadas coordenadas, LocalDate data) {
