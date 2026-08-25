@@ -16,6 +16,7 @@ public class ForecastResponseMapper {
         List<Double> tempMax = resposta.daily().temperature_2m_max();
         List<Double> tempMin = resposta.daily().temperature_2m_min();
         List<Double> precipitacao = resposta.daily().precipitation_sum();
+        List<Integer> weatherCodes = resposta.daily().weather_code();
 
         List<DadosClimaticos> lista = new ArrayList<>();
         for (int i = 0; i < datas.size(); i++) {
@@ -29,6 +30,7 @@ public class ForecastResponseMapper {
                     precipitacao.get(i),
                     null,
                     null,
+                    ClassificadorClima.porWeatherCode(weatherCodes.get(i)),
                     "OPEN_METEO"
             ));
         }

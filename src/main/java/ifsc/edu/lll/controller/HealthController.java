@@ -10,6 +10,6 @@ public class HealthController {
 
     @GetMapping("/ping")
     public ResponseEntity<ApiResponse<String>> ping() {
-        return ResponseEntity.ok(ApiResponse.sucess("OK"));
+        return ResponseEntity.ok(ApiResponse.success("OK"));
     }
 }
