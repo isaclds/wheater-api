@@ -22,13 +22,28 @@ public class PrevisaoService {
         this.forecastClimaService = forecastClimaService;
         this.nasaClimaService = nasaClimaService;
     }
-    //Criar classe buscar por clima predominante na cidade, usar o buscaCoordenadas no geocodingservice
 
-    //Criar classe buscar por clima predominante no pais, mexer no GeocodingCordenadasService para a busca
+    public DadosClimaticos buscaPrevisaoPorCidade(String pais, String cidade, LocalDate data) {
+        Coordenadas coordenadas = geocodingCoordenadasService.buscaCoordenadas(cidade, pais);
+        return buscarClima(coordenadas, data);
+    }
 
-    //Criar classe buscar por clima predominante no estado, mexer no GeocodingCordenadasService para a busca
+    public DadosClimaticos buscaPrevisaoPorPais(String pais, LocalDate data) {
+        Coordenadas coordenadas = geocodingCoordenadasService.buscaCoordenadas(pais, pais);
+        return buscarClima(coordenadas, data);
+    }
 
-    //Fazer um metodo para comparar se a data passada é no passado ou futuro, usar os metodos abaixo dependendo da resposta
+    public DadosClimaticos buscaPrevisaoPorEstado(String pais, String estado, LocalDate data) {
+        Coordenadas coordenadas = geocodingCoordenadasService.buscaCoordenadas(estado, pais);
+        return buscarClima(coordenadas, data);
+    }
+
+    private DadosClimaticos buscarClima(Coordenadas coordenadas, LocalDate data) {
+        if (data.isBefore(LocalDate.now())) {
+            return buscarClimaPassado(coordenadas, data);
+        }
+        return buscarClimaFuturo(coordenadas, data);
+    }
 
     private DadosClimaticos buscarClimaPassado(Coordenadas coordenadas, LocalDate data) {
         List<DadosClimaticos> dados = nasaClimaService.buscarClimaDiario(coordenadas, data, data);
