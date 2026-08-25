@@ -14,7 +14,7 @@ public record ApiResponse<T>(
         return new ApiResponse<>(status, false, title, data);
     }
 
-    public static <T> ApiResponse<T> sucess(T dados) {
+    public static <T> ApiResponse<T> success(T dados) {
         return new ApiResponse<>(200, true, "OK", dados);
     }
 }
