@@ -1,39 +1,46 @@
 package ifsc.edu.lll.controller;
 
-import ifsc.edu.lll.dto.response.ApiResponse;
 import ifsc.edu.lll.dto.shared.DadosClimaticos;
-import ifsc.edu.lll.service.ForecastClimaService;
+import ifsc.edu.lll.service.PrevisaoService;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
 @RequestMapping("/previsao")
 public class PrevisaoController {
 
-    private final ForecastClimaService forecastClimaService;
+    private final PrevisaoService previsaoService;
 
-    public PrevisaoController(ForecastClimaService forecastClimaService) {
-        this.forecastClimaService = forecastClimaService;
+    public PrevisaoController(PrevisaoService previsaoService) {
+        this.previsaoService = previsaoService;
     }
 
     @GetMapping("/{pais}")
-    public ResponseEntity<Integer> previsaoPorPais(
-            @PathVariable String pais) {
-        return ResponseEntity.ok(0);
+    public ResponseEntity<List<DadosClimaticos>> previsaoPorPais(
+            @PathVariable String pais,
+            @RequestParam(required = false) String data) {
+        return ResponseEntity.ok(previsaoService.buscaPrevisaoPorPais(pais, parseData(data)));
     }
     @GetMapping("/{pais}/{estado}")
-    public ResponseEntity<Integer> previsaoPorPaisEstado(
-            @PathVariable String pais,@PathVariable String estado) {
-        return ResponseEntity.ok(0);
+    public ResponseEntity<List<DadosClimaticos>> previsaoPorPaisEstado(
+            @PathVariable String pais,
+            @PathVariable String estado,
+            @RequestParam(required = false) String data) {
+        return ResponseEntity.ok(previsaoService.buscaPrevisaoPorEstado(pais, estado, parseData(data)));
     }
     @GetMapping("/{pais}/{estado}/{cidade}")
-    public ResponseEntity<Integer> previsaoPorPaisEstadoCidade(
-            @PathVariable String pais,@PathVariable String estado,@PathVariable String cidade) {
-        return ResponseEntity.ok(0);
+    public ResponseEntity<DadosClimaticos> previsaoPorPaisEstadoCidade(
+            @PathVariable String pais,
+            @PathVariable String estado,
+            @PathVariable String cidade,
+            @RequestParam(required = false) String data) {
+        return ResponseEntity.ok(previsaoService.buscaPrevisaoPorCidade(pais, cidade, parseData(data)));
+    }
+
+    private LocalDate parseData(String data) {
+        return data != null ? LocalDate.parse(data) : LocalDate.now();
     }
 }
