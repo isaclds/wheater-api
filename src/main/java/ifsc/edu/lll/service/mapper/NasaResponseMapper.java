@@ -20,16 +20,20 @@ public class NasaResponseMapper {
 
         return p.get("T2M").keySet().stream()
                 .sorted()
-                .map(dataStr -> new DadosClimaticos(
-                        LocalDate.parse(dataStr, FORMATO_NASA),
-                        tratar(valorDe(p, "T2M", dataStr)),
-                        null,
-                        null,
-                        tratar(valorDe(p, "PRECTOTCORR", dataStr)),
-                        tratar(valorDe(p, "RH2M", dataStr)),
-                        tratar(valorDe(p, "WS2M", dataStr)),
-                        "NASA_POWER"
-                ))
+                .map(dataStr -> {
+                    Double precipitacaoDia = tratar(valorDe(p, "PRECTOTCORR", dataStr));
+                    return new DadosClimaticos(
+                            LocalDate.parse(dataStr, FORMATO_NASA),
+                            tratar(valorDe(p, "T2M", dataStr)),
+                            null,
+                            null,
+                            precipitacaoDia,
+                            tratar(valorDe(p, "RH2M", dataStr)),
+                            tratar(valorDe(p, "WS2M", dataStr)),
+                            ClassificadorClima.porPrecipitacao(precipitacaoDia),
+                            "NASA_POWER"
+                    );
+                })
                 .toList();
     }
 

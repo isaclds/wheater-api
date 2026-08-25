@@ -24,25 +24,4 @@ public class LllApplication {
         SpringApplication.run(LllApplication.class, args);
     }
 
-    @Bean
-    CommandLineRunner testarApi(GeocodingCoordenadasService service,
-                                ForecastClimaService climaService,
-                                NasaClimaService nasaClimaService) {
-        return args -> {
-            Coordenadas resposta = service.buscaCoordenadas("brasil", "br");
-
-            List<DadosClimaticos> listaClima = climaService.buscaPrevisao(resposta, 7);
-
-            List<DadosClimaticos> listaNasa = nasaClimaService.buscarClimaDiario(
-                    resposta,
-                    LocalDate.of(2026, 8, 1),
-                    LocalDate.of(2026, 8, 8)
-            );
-
-            System.out.println(resposta);
-            System.out.println(listaClima);
-            System.out.println(listaNasa);
-        };
-    }
-
 }
