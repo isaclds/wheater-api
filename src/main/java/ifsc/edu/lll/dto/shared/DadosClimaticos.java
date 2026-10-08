@@ -10,6 +10,6 @@ public record DadosClimaticos(
         Double precipitacao,
         Double umidadeRelativa,
         Double velocidadeVento,
-        String fonte,
-        String condicaoClima
+        String condicaoClima,
+        String fonte
 ) {}

@@ -25,8 +25,8 @@ public class GeocodingCoordenadasService {
         this.mapper = mapper;
     }
 
-    public Coordenadas buscaCoordenadas(String local, String codigoPais) {
-        GeoResponse dados = this.buscaDados(local, codigoPais);
+    public Coordenadas buscaCoordenadas(String local, String pais) {
+        GeoResponse dados = this.buscaDados(local, CodigoPais.de(pais));
         return mapper.paraCoordenadas(dados);
     }
 
