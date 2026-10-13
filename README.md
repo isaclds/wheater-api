@@ -540,7 +540,6 @@ Estratégia de testes:
 | Tipo | Escopo | Tecnologia |
 |---|---|---|
 | Unidade | Lógica de negócio isolada | JUnit 5, AssertJ e Mockito |
-| Integração | Controllers HTTP e Exception Handler | MockMvc |
 | Contexto | Inicialização do Spring | SpringBootTest |
 
 O que é testado:
@@ -611,7 +610,8 @@ Esta seção descreve como ferramentas de IA foram usadas no desenvolvimento do 
 | Ferramenta | Uso Principal |
 |---|---|
 | **Google Antigravity (Gemini)** | Análise dos requisitos do professor, identificação de gaps, geração de código |
-| **GitHub Copilot** | Completar código durante digitação no IntelliJ |
+| **GitHub Copilot**              | Completar código durante digitação no IntelliJ                       |
+| **Claude**                      | Auxiliou na criação dos diagramas e da documentação do projeto       |
 
 ### Partes com apoio de IA:
 
