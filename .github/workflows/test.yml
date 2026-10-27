@@ -1,0 +1,41 @@
+name: Testes Automatizados
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+jobs:
+  test:
+    name: Executar Testes Unitários e de Integração
+    runs-on: ubuntu-latest
+
+    env:
+      JWT_SECRET: "segredo-de-teste-ci-com-mais-de-32-bytes-para-execucao-completa"
+
+    steps:
+      - name: Checkout do repositório
+        uses: actions/checkout@v4
+
+      - name: Configurar JDK 25
+        uses: actions/setup-java@v4
+        with:
+          java-version: '25'
+          distribution: 'oracle'
+
+      - name: Configurar Gradle
+        uses: gradle/actions/setup-gradle@v4
+
+      - name: Conceder permissão de execução ao gradlew
+        run: chmod +x gradlew
+
+      - name: Executar testes automatizados
+        run: ./gradlew test --no-daemon
+
+      - name: Publicar relatório de testes
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: relatorio-testes
+          path: build/reports/tests/test/
+          retention-days: 14
