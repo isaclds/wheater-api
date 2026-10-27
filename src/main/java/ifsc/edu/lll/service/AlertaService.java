@@ -19,8 +19,9 @@ public class AlertaService {
     }
 
     @Transactional
-    public AlertaResponseDTO cadastrar(AlertaRequestDTO dto) {
+    public AlertaResponseDTO cadastrar(Long clienteId, AlertaRequestDTO dto) {
         Alerta alerta = new Alerta(
+                clienteId,
                 dto.canalId(), dto.pais(), dto.cidade(),
                 dto.temperaturaMaxima(), dto.temperaturaMinima(),
                 dto.precipitacao()
@@ -30,10 +31,15 @@ public class AlertaService {
     }
 
     @Transactional(readOnly = true)
-    public List<AlertaResponseDTO> listarAtivos() {
-        return alertaRepository.findByAtivoTrue()
+    public List<AlertaResponseDTO> listarAtivos(Long clienteId) {
+        return alertaRepository.findByClienteIdAndAtivoTrue(clienteId)
                 .stream()
                 .map(AlertaResponseDTO::de)
                 .toList();
+    }
+
+    @Transactional(readOnly = true)
+    public boolean canalHabilitado(Long clienteId, Long canalId) {
+        return alertaRepository.existsByClienteIdAndCanalId(clienteId, canalId);
     }
 }

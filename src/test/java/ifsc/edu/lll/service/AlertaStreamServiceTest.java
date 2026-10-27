@@ -7,6 +7,7 @@ import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.springframework.web.servlet.mvc.method.annotation.SseEmitter;
 
+import java.time.Instant;
 import java.time.LocalDate;
 
 import static org.assertj.core.api.Assertions.assertThat;
@@ -16,16 +17,18 @@ import static org.assertj.core.api.Assertions.assertThatCode;
 class AlertaStreamServiceTest {
 
     private AlertaStreamService streamService;
+    private Instant futuro;
 
     @BeforeEach
     void setUp() {
-        streamService = new AlertaStreamService();
+        streamService = new AlertaStreamService(5);
+        futuro = Instant.now().plusSeconds(1800);
     }
 
     @Test
     @DisplayName("Deve registrar SseEmitter com sucesso para um canal")
     void deveRegistrarSseEmitter() {
-        SseEmitter emitter = streamService.registrar(1L);
+        SseEmitter emitter = streamService.registrar(1L, 1L, futuro);
 
         assertThat(emitter).isNotNull();
     }
@@ -33,8 +36,8 @@ class AlertaStreamServiceTest {
     @Test
     @DisplayName("Deve permitir registrar múltiplos emitters para o mesmo canal")
     void deveRegistrarMultiplosEmittersMesmoCanal() {
-        SseEmitter emitter1 = streamService.registrar(1L);
-        SseEmitter emitter2 = streamService.registrar(1L);
+        SseEmitter emitter1 = streamService.registrar(1L, 1L, futuro);
+        SseEmitter emitter2 = streamService.registrar(1L, 1L, futuro);
 
         assertThat(emitter1).isNotNull();
         assertThat(emitter2).isNotNull();
@@ -48,20 +51,20 @@ class AlertaStreamServiceTest {
                 LocalDate.now(), 20.0, 25.0, 15.0, 0.0, 60.0, 5.0, "CEU_LIMPO", "OPEN_METEO");
         AlertaDisparoDTO disparo = new AlertaDisparoDTO(10L, "Florianópolis", "BR", clima);
 
-        assertThatCode(() -> streamService.enviar(999L, disparo))
+        assertThatCode(() -> streamService.enviar(1L, 999L, disparo))
                 .doesNotThrowAnyException();
     }
 
     @Test
     @DisplayName("Deve enviar alerta para canal com conexões ativas")
     void deveEnviarParaCanalComAssinante() {
-        streamService.registrar(1L);
+        streamService.registrar(1L, 1L, futuro);
 
         DadosClimaticos clima = new DadosClimaticos(
                 LocalDate.now(), 30.0, 36.0, 24.0, 10.0, 80.0, 12.0, "TEMPESTADE", "OPEN_METEO");
         AlertaDisparoDTO disparo = new AlertaDisparoDTO(1L, "Florianópolis", "BR", clima);
 
-        assertThatCode(() -> streamService.enviar(1L, disparo))
+        assertThatCode(() -> streamService.enviar(1L, 1L, disparo))
                 .doesNotThrowAnyException();
     }
 }

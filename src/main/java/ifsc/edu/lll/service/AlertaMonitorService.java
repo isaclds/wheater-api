@@ -43,8 +43,8 @@ public class AlertaMonitorService {
                         .buscaPrevisaoPorCidade(alerta.getPais(), alerta.getCidade(), LocalDate.now());
 
                 if (alerta.foiAtingidoPor(previsao)) {
-                    log.info("Alerta {} disparado para canal {}", alerta.getId(), alerta.getCanalId());
-                    stream.enviar(alerta.getCanalId(), AlertaDisparoDTO.de(alerta, previsao));
+                    log.info("Alerta {} disparado para cliente {} canal {}", alerta.getId(), alerta.getClienteId(), alerta.getCanalId());
+                    stream.enviar(alerta.getClienteId(), alerta.getCanalId(), AlertaDisparoDTO.de(alerta, previsao));
                 }
             } catch (Exception e) {
                 log.warn("Erro ao verificar alerta {}: {}", alerta.getId(), e.getMessage());

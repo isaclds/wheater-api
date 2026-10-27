@@ -30,10 +30,10 @@ class AlertaServiceTest {
     @DisplayName("Deve salvar alerta e retornar DTO com dados corretos")
     void cadastrarDeveRetornarDtoComDadosCorretos() {
         AlertaRequestDTO dto = new AlertaRequestDTO(42L, "Brasil", "Florianópolis", 35.0, 5.0, 20.0);
-        Alerta alertaSalvo = new Alerta(42L, "Brasil", "Florianópolis", 35.0, 5.0, 20.0);
+        Alerta alertaSalvo = new Alerta(1L, 42L, "Brasil", "Florianópolis", 35.0, 5.0, 20.0);
         when(alertaRepository.save(any(Alerta.class))).thenReturn(alertaSalvo);
 
-        AlertaResponseDTO resultado = alertaService.cadastrar(dto);
+        AlertaResponseDTO resultado = alertaService.cadastrar(1L, dto);
 
         assertThat(resultado).isNotNull();
         assertThat(resultado.canalId()).isEqualTo(42L);
@@ -47,10 +47,10 @@ class AlertaServiceTest {
     @DisplayName("Deve chamar repository.save exatamente uma vez")
     void cadastrarDeveChmarSaveUmaVez() {
         AlertaRequestDTO dto = new AlertaRequestDTO(1L, "BR", "Curitiba", null, null, null);
-        Alerta alertaSalvo = new Alerta(1L, "BR", "Curitiba", null, null, null);
+        Alerta alertaSalvo = new Alerta(1L, 1L, "BR", "Curitiba", null, null, null);
         when(alertaRepository.save(any(Alerta.class))).thenReturn(alertaSalvo);
 
-        alertaService.cadastrar(dto);
+        alertaService.cadastrar(1L, dto);
 
         verify(alertaRepository, times(1)).save(any(Alerta.class));
     }
@@ -59,13 +59,14 @@ class AlertaServiceTest {
     @DisplayName("Alerta criado deve ser enviado ao repository com ativo=true")
     void alertaCriadoDeveEstarAtivo() {
         AlertaRequestDTO dto = new AlertaRequestDTO(1L, "BR", "Curitiba", 40.0, null, null);
-        Alerta alertaSalvo = new Alerta(1L, "BR", "Curitiba", 40.0, null, null);
+        Alerta alertaSalvo = new Alerta(1L, 1L, "BR", "Curitiba", 40.0, null, null);
         when(alertaRepository.save(any(Alerta.class))).thenReturn(alertaSalvo);
 
         ArgumentCaptor<Alerta> captor = ArgumentCaptor.forClass(Alerta.class);
-        alertaService.cadastrar(dto);
+        alertaService.cadastrar(1L, dto);
 
         verify(alertaRepository).save(captor.capture());
         assertThat(captor.getValue().isAtivo()).isTrue();
+        assertThat(captor.getValue().getClienteId()).isEqualTo(1L);
     }
 }

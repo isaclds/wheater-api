@@ -4,17 +4,21 @@ import ifsc.edu.lll.dto.shared.DadosClimaticos;
 import jakarta.persistence.*;
 
 /**
- * Entidade JPA que representa um alerta climático cadastrado por um canal.
+ * Entidade JPA que representa um alerta climático cadastrado por um canal de um cliente.
  * Um alerta dispara (via SSE) quando as condições climáticas previstas
  * ultrapassam os limites definidos pelo usuário.
  */
 @Entity
-@Table(name = "alertas")
+@Table(name = "alertas",
+       indexes = @Index(name = "idx_alertas_cliente_canal", columnList = "cliente_id, canal_id"))
 public class Alerta {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
+
+    @Column(name = "cliente_id", nullable = false)
+    private Long clienteId;
 
     @Column(name = "canal_id", nullable = false)
     private Long canalId;
@@ -43,9 +47,10 @@ public class Alerta {
     /** Construtor padrão exigido pelo JPA */
     protected Alerta() {}
 
-    public Alerta(Long canalId, String pais, String cidade,
+    public Alerta(Long clienteId, Long canalId, String pais, String cidade,
                   Double temperaturaMaxima, Double temperaturaMinima,
                   Double precipitacao) {
+        this.clienteId = clienteId;
         this.canalId = canalId;
         this.pais = pais;
         this.cidade = cidade;
@@ -68,6 +73,7 @@ public class Alerta {
 
     // ── Getters ──────────────────────────────────────────────────
     public Long getId()                { return id; }
+    public Long getClienteId()         { return clienteId; }
     public Long getCanalId()           { return canalId; }
     public String getPais()            { return pais; }
     public String getCidade()          { return cidade; }
