@@ -23,6 +23,10 @@ As regras a seguir devem ser obedecidas por agentes de IA e desenvolvedores em q
 - Nunca realize `catch (Exception e)` silencioso ou com `e.printStackTrace()`.
 - Use a abstração `org.slf4j.Logger` via `LoggerFactory.getLogger(...)` para logs de erro e advertência.
 
-## 4. OpenAPI / Swagger
-- Todo novo endpoint deve ser documentado com anotações `@Tag`, `@Operation` e `@ApiResponses`.
-- As rotas devem refletir adequadamente os códigos HTTP esperados (200, 201, 400, 401, 403, 404, 422, 500).
+## 4. OpenAPI / Swagger (Obrigatório em Qualquer Alteração na API)
+- **Sincronização Contínua**: Sempre que uma regra de negócio, validação, cabeçalho, request/response DTO, comportamento ou código HTTP for alterado ou criado na API, a documentação Swagger / OpenAPI (`/docs` e `/docs-json`) **DEVE** ser obrigatoriamente atualizada.
+- Todo endpoint deve ser documentado com anotações `@Tag`, `@Operation`, `@Parameter` e `@ApiResponses`.
+- As rotas devem refletir adequadamente todos os códigos HTTP possíveis (200, 201, 400, 401, 403, 404, 409, 422, 429, 500).
+- Rotas autenticadas devem explicitar `@SecurityRequirement(name = "bearerAuth")`.
+- Mudanças transversais (ex: Rate Limiting, autenticação, headers globais) devem ser refletidas em `OpenApiConfig.java`.
+- Siga as instruções da skill `.agents/skills/atualizar-swagger/SKILL.md` e a regra `.agents/rules/atualizacao-swagger.md`.

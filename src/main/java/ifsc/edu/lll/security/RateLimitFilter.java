@@ -46,7 +46,15 @@ public class RateLimitFilter extends OncePerRequestFilter {
         if (!habilitado) {
             return true;
         }
+        String uri = request.getRequestURI();
         String path = request.getServletPath();
+        return isRotaIgnorada(uri) || isRotaIgnorada(path);
+    }
+
+    private boolean isRotaIgnorada(String path) {
+        if (path == null) {
+            return false;
+        }
         return "/ping".equals(path)
                 || path.startsWith("/docs")
                 || path.startsWith("/docs-json")

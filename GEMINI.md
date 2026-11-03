@@ -219,9 +219,12 @@ src/main/java/ifsc/edu/lll/
 4. **Tratamento de Exceções**:
    - Nunca capture e ignore exceções sem log adequado.
    - Qualquer nova exceção de negócio deve ser tratada no `GlobalExceptionHandler`.
-5. **Documentação com OpenAPI**:
-   - Mantenha controllers anotados com `@Tag`, `@Operation`, `@Parameter` e `@ApiResponses`.
-   - Garanta que schemas de retorno estejam explicitados.
+5. **Documentação com OpenAPI / Swagger (Obrigatória em Toda Alteração)**:
+   - Toda alteração em regras de negócio, endpoints, requests, validações ou comportamentos da API **deve** obrigatoriamente refletir no Swagger / OpenAPI (`/docs` e `/docs-json`).
+   - Mantenha controllers anotados com `@Tag`, `@Operation`, `@Parameter` e `@ApiResponses` com todos os status HTTP esperados (200, 201, 400, 401, 403, 404, 409, 422, 429, 500).
+   - Em rotas protegidas por JWT, declare `@SecurityRequirement(name = "bearerAuth")`.
+   - Modificações globais ou transversais (ex: Rate Limiting, autenticação, headers de resposta) devem ser documentadas em `OpenApiConfig.java`.
+   - Consulte e siga a skill `.agents/skills/atualizar-swagger/SKILL.md` e a regra `.agents/rules/atualizacao-swagger.md`.
 
 ---
 

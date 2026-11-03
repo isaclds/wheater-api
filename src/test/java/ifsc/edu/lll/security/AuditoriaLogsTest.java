@@ -29,7 +29,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
         "jwt.secret=segredo-muito-seguro-com-mais-de-32-bytes-para-os-testes",
-        "jwt.expiration-minutes=30"
+        "jwt.expiration-minutes=30",
+        "rate-limit.limit=200"
 })
 @DisplayName("Auditoria de Logs — verificação de não vazamento de senhas, hashes e tokens (OPS-01, CLI-06)")
 class AuditoriaLogsTest {
