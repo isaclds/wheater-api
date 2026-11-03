@@ -51,6 +51,11 @@ class SecurityIntegrationTest {
         mockMvc.perform(get("/docs"))
                 .andExpect(status().is(not(401)));
 
+        mockMvc.perform(get("/docs-json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.components.responses.RateLimitExceeded").exists())
+                .andExpect(jsonPath("$.info.description").value(org.hamcrest.Matchers.containsString("Rate Limiting")));
+
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content("{}"))
