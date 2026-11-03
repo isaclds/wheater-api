@@ -13,4 +13,8 @@ import java.util.List;
 public interface AlertaRepository extends JpaRepository<Alerta, Long> {
 
     List<Alerta> findByAtivoTrue();
+
+    List<Alerta> findByClienteIdAndAtivoTrue(Long clienteId);
+
+    boolean existsByClienteIdAndCanalId(Long clienteId, Long canalId);
 }

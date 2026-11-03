@@ -38,7 +38,7 @@ class AlertaMonitorServiceTest {
     @DisplayName("Deve disparar evento SSE quando as condições do alerta forem atingidas")
     void deveDispararAlertaQuandoCondicaoAtingida() {
         // Alerta configurado com limite máximo de 30°C
-        Alerta alerta = new Alerta(100L, "BR", "Florianópolis", 30.0, null, null);
+        Alerta alerta = new Alerta(1L, 100L, "BR", "Florianópolis", 30.0, null, null);
         when(alertaRepository.findByAtivoTrue()).thenReturn(List.of(alerta));
 
         // Previsão do dia com 35°C (ultrapassa limite)
@@ -49,13 +49,13 @@ class AlertaMonitorServiceTest {
 
         monitorService.verificarAlertas();
 
-        verify(streamService, times(1)).enviar(eq(100L), any(AlertaDisparoDTO.class));
+        verify(streamService, times(1)).enviar(eq(1L), eq(100L), any(AlertaDisparoDTO.class));
     }
 
     @Test
     @DisplayName("Não deve disparar evento SSE quando a previsão não atingir os limites")
     void naoDeveDispararAlertaQuandoCondicaoNaoAtingida() {
-        Alerta alerta = new Alerta(100L, "BR", "Florianópolis", 35.0, null, null);
+        Alerta alerta = new Alerta(1L, 100L, "BR", "Florianópolis", 35.0, null, null);
         when(alertaRepository.findByAtivoTrue()).thenReturn(List.of(alerta));
 
         // Previsão com 25°C (menor que limite)
@@ -66,14 +66,14 @@ class AlertaMonitorServiceTest {
 
         monitorService.verificarAlertas();
 
-        verify(streamService, never()).enviar(any(), any());
+        verify(streamService, never()).enviar(any(), any(), any());
     }
 
     @Test
     @DisplayName("Deve continuar processando outros alertas mesmo se um falhar com exceção")
     void deveContinuarExecucaoAposErroEmUmAlerta() {
-        Alerta alertaComErro = new Alerta(1L, "XX", "CidadeInvalida", 30.0, null, null);
-        Alerta alertaSucesso = new Alerta(2L, "BR", "Florianópolis", 20.0, null, null);
+        Alerta alertaComErro = new Alerta(1L, 1L, "XX", "CidadeInvalida", 30.0, null, null);
+        Alerta alertaSucesso = new Alerta(2L, 2L, "BR", "Florianópolis", 20.0, null, null);
         when(alertaRepository.findByAtivoTrue()).thenReturn(List.of(alertaComErro, alertaSucesso));
 
         when(previsaoService.buscaPrevisaoPorCidade(eq("XX"), eq("CidadeInvalida"), any()))
@@ -86,6 +86,6 @@ class AlertaMonitorServiceTest {
 
         monitorService.verificarAlertas();
 
-        verify(streamService, times(1)).enviar(eq(2L), any(AlertaDisparoDTO.class));
+        verify(streamService, times(1)).enviar(eq(2L), eq(2L), any(AlertaDisparoDTO.class));
     }
 }
