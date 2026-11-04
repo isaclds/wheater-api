@@ -26,7 +26,8 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 @AutoConfigureMockMvc
 @TestPropertySource(properties = {
         "jwt.secret=segredo-muito-seguro-com-mais-de-32-bytes-para-os-testes",
-        "jwt.expiration-minutes=30"
+        "jwt.expiration-minutes=30",
+        "rate-limit.limit=200"
 })
 @DisplayName("SecurityConfig — testes de integração para proteção de rotas")
 class SecurityIntegrationTest {
@@ -50,6 +51,11 @@ class SecurityIntegrationTest {
 
         mockMvc.perform(get("/docs"))
                 .andExpect(status().is(not(401)));
+
+        mockMvc.perform(get("/docs-json"))
+                .andExpect(status().isOk())
+                .andExpect(jsonPath("$.components.responses.RateLimitExceeded").exists())
+                .andExpect(jsonPath("$.info.description").value(org.hamcrest.Matchers.containsString("Rate Limiting")));
 
         mockMvc.perform(post("/auth/login")
                         .contentType(MediaType.APPLICATION_JSON)
