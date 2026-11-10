@@ -1,5 +1,7 @@
 package ifsc.edu.lll.controller;
 
+import ifsc.edu.lll.dto.alerta.AlertaRequestDTO;
+import ifsc.edu.lll.dto.log.LogRequestDTO;
 import ifsc.edu.lll.dto.response.ApiResponse;
 import ifsc.edu.lll.model.Log;
 import ifsc.edu.lll.service.LogService;
@@ -9,10 +11,7 @@ import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PathVariable;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
@@ -51,12 +50,45 @@ public class LogController {
             )
     })
     public ResponseEntity<ApiResponse<List<Log>>> buscaLogsPorStatus(
-            @Parameter(description = "Nome ou código ISO-2 do país", example = "Brasil", required = true)
+            @Parameter(description = "Busca log por status", example = "200", required = true)
             @PathVariable String status
     ) {
         int statusInt = Integer.parseInt(status);
         return ResponseEntity
                 .status(HttpStatus.OK)
                 .body(ApiResponse.success(201, logEncontrado, logService.buscaLogPorStatus(statusInt)));
+    }
+
+    @GetMapping("/{endpoint}")
+    @Operation(summary = "Busca logs por endpoint", description = "Busca todos os logs registrados no banco com determinado endpoint.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = logEncontrado
+            )
+    })
+    public ResponseEntity<ApiResponse<List<Log>>> buscaLogPorEndpoint(
+            @Parameter(description = "Endpoint desejado", example = "/auth/clientes", required = true)
+            @PathVariable String endpoint
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(201, logEncontrado, logService.buscaLogPorEndpoint("/" + endpoint)));
+    }
+
+    @GetMapping("/data")
+    @Operation(summary = "Busca logs entre duas datas", description = "Busca todos os logs registrados no intervalo de duas datas.")
+    @ApiResponses({
+            @io.swagger.v3.oas.annotations.responses.ApiResponse(
+                    responseCode = "200",
+                    description = logEncontrado
+            )
+    })
+    public ResponseEntity<ApiResponse<List<Log>>> buscaLogPorData(
+            @RequestBody LogRequestDTO dto
+    ) {
+        return ResponseEntity
+                .status(HttpStatus.OK)
+                .body(ApiResponse.success(201, logEncontrado, logService.buscaLogPorIntervalo(dto)));
     }
 }
