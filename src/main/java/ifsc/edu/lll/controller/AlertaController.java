@@ -7,6 +7,7 @@ import ifsc.edu.lll.exception.CanalNaoHabilitadoException;
 import ifsc.edu.lll.security.ClienteAutenticado;
 import ifsc.edu.lll.service.AlertaService;
 import ifsc.edu.lll.service.AlertaStreamService;
+import ifsc.edu.lll.service.LogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -35,10 +36,12 @@ public class AlertaController {
 
     private final AlertaService alertaService;
     private final AlertaStreamService stream;
+    private final LogService logService;
 
-    public AlertaController(AlertaService alertaService, AlertaStreamService stream) {
+    public AlertaController(AlertaService alertaService, AlertaStreamService stream, LogService logService) {
         this.alertaService = alertaService;
         this.stream = stream;
+        this.logService = logService;
     }
 
     @PostMapping
@@ -66,9 +69,11 @@ public class AlertaController {
             @AuthenticationPrincipal ClienteAutenticado cliente,
             @Valid @RequestBody AlertaRequestDTO dto) {
         AlertaResponseDTO alerta = alertaService.cadastrar(cliente.id(), dto);
+        int status = 201;
+        logService.criarLog("/alertas", status);
         return ResponseEntity
                 .status(HttpStatus.CREATED)
-                .body(ApiResponse.success(201, "Alerta cadastrado com sucesso", alerta));
+                .body(ApiResponse.success(status, "Alerta cadastrado com sucesso", alerta));
     }
 
     @GetMapping
@@ -85,7 +90,10 @@ public class AlertaController {
     })
     public ResponseEntity<ApiResponse<List<AlertaResponseDTO>>> listar(
             @AuthenticationPrincipal ClienteAutenticado cliente) {
-        return ResponseEntity.ok(ApiResponse.success(alertaService.listarAtivos(cliente.id())));
+        List<AlertaResponseDTO> responseDTOS = alertaService.listarAtivos(cliente.id());
+        int status = 200;
+        logService.criarLog("/alertas", status);
+        return ResponseEntity.ok(ApiResponse.success(responseDTOS));
     }
 
     @GetMapping(path = "/stream", produces = MediaType.TEXT_EVENT_STREAM_VALUE)
@@ -123,6 +131,9 @@ public class AlertaController {
         if (!alertaService.canalHabilitado(cliente.id(), canalId)) {
             throw new CanalNaoHabilitadoException();
         }
+
+        int status = 200;
+        logService.criarLog("/alertas/stream", status);
         return stream.registrar(cliente.id(), canalId, cliente.expiraEm());
     }
 }

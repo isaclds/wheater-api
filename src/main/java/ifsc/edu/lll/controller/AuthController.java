@@ -7,6 +7,7 @@ import ifsc.edu.lll.dto.auth.TokenResponseDTO;
 import ifsc.edu.lll.dto.response.ApiResponse;
 import ifsc.edu.lll.service.AuthService;
 import ifsc.edu.lll.service.ClienteService;
+import ifsc.edu.lll.service.LogService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
@@ -27,10 +28,12 @@ public class AuthController {
 
     private final ClienteService clienteService;
     private final AuthService authService;
+    private final LogService logService;
 
-    public AuthController(ClienteService clienteService, AuthService authService) {
+    public AuthController(ClienteService clienteService, AuthService authService, LogService logService) {
         this.clienteService = clienteService;
         this.authService = authService;
+        this.logService = logService;
     }
 
     @PostMapping("/clientes")
@@ -45,8 +48,11 @@ public class AuthController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Dados inválidos")
     })
     public ResponseEntity<ApiResponse<ClienteResponseDTO>> cadastrar(@Valid @RequestBody ClienteRequestDTO dto) {
+        ClienteResponseDTO resposta = clienteService.cadastrar(dto);
+        int status = 201;
+        logService.criarLog("/auth/clientes", status);
         return ResponseEntity.status(HttpStatus.CREATED)
-                .body(ApiResponse.success(201, "Cliente cadastrado com sucesso", clienteService.cadastrar(dto)));
+                .body(ApiResponse.success(status, "Cliente cadastrado com sucesso", resposta));
     }
 
     @PostMapping("/login")
@@ -61,6 +67,10 @@ public class AuthController {
             @io.swagger.v3.oas.annotations.responses.ApiResponse(responseCode = "422", description = "Dados inválidos")
     })
     public ResponseEntity<ApiResponse<TokenResponseDTO>> login(@Valid @RequestBody LoginRequestDTO dto) {
-        return ResponseEntity.ok(ApiResponse.success(authService.login(dto)));
+        TokenResponseDTO response = authService.login(dto);
+
+        int status = 200;
+        logService.criarLog("/auth/login", status);
+        return ResponseEntity.ok(ApiResponse.success(response));
     }
 }

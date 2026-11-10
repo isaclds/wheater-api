@@ -4,6 +4,7 @@ import ifsc.edu.lll.dto.geocoding.Localizacao;
 import ifsc.edu.lll.dto.response.ApiResponse;
 import ifsc.edu.lll.dto.shared.DadosClimaticos;
 import ifsc.edu.lll.service.GeolocalizacaoService;
+import ifsc.edu.lll.service.LogService;
 import ifsc.edu.lll.service.PrevisaoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -25,10 +26,12 @@ public class PrevisaoController {
 
     private final PrevisaoService previsaoService;
     private final GeolocalizacaoService geolocalizacaoService;
+    private final LogService logService;
 
-    public PrevisaoController(PrevisaoService previsaoService, GeolocalizacaoService geolocalizacaoService) {
+    public PrevisaoController(PrevisaoService previsaoService, GeolocalizacaoService geolocalizacaoService, LogService logService) {
         this.previsaoService = previsaoService;
         this.geolocalizacaoService = geolocalizacaoService;
+        this.logService = logService;
     }
 
     @GetMapping("/{pais}")
@@ -54,6 +57,8 @@ public class PrevisaoController {
             @Parameter(description = "Data no formato ISO-8601 (yyyy-MM-dd). Padrão: hoje.", example = "2026-10-09")
             @RequestParam(required = false) String data) {
         List<DadosClimaticos> climas = previsaoService.buscaPrevisaoPorPais(pais, parseData(data));
+        int status = 200;
+        logService.criarLog("/ping", status);
         return ResponseEntity.ok(ApiResponse.success(climas));
     }
 
@@ -80,6 +85,8 @@ public class PrevisaoController {
             @Parameter(description = "Data no formato ISO-8601 (yyyy-MM-dd). Padrão: hoje.", example = "2026-10-09")
             @RequestParam(required = false) String data) {
         List<DadosClimaticos> climas = previsaoService.buscaPrevisaoPorEstado(pais, estado, parseData(data));
+        int status = 200;
+        logService.criarLog("/previsao/" + pais + "/" + estado, status);
         return ResponseEntity.ok(ApiResponse.success(climas));
     }
 
@@ -109,6 +116,8 @@ public class PrevisaoController {
             @Parameter(description = "Data no formato ISO-8601 (yyyy-MM-dd). Padrão: hoje.", example = "2026-10-09")
             @RequestParam(required = false) String data) {
         DadosClimaticos clima = previsaoService.buscaPrevisaoPorCidade(pais, cidade, parseData(data));
+        int status = 200;
+        logService.criarLog("/previsao/" + pais + "/" + estado + "/" + cidade, status);
         return ResponseEntity.ok(ApiResponse.success(clima));
     }
 
@@ -131,6 +140,9 @@ public class PrevisaoController {
         Localizacao loc = geolocalizacaoService.porIp(request.getRemoteAddr());
         DadosClimaticos clima = previsaoService.buscaPrevisaoPorCidade(
                 loc.pais(), loc.cidade(), LocalDate.now());
+
+        int status = 200;
+        logService.criarLog("/previsao/aqui", status);
         return ResponseEntity.ok(ApiResponse.success(clima));
     }
 
